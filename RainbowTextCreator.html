@@ -1,0 +1,286 @@
+<html><head><base href="https://websim.creationengine.ai/text-to-tiktok-commercial-v16/">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TikTok Commercial Text Generator</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+    background-color: #121212;
+    color: #ffffff;
+  }
+
+  .controls {
+    width: 300px;
+    padding: 20px;
+    overflow-y: auto;
+    background-color: #1e1e1e;
+  }
+
+  .canvas-container {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #2c2c2c;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #output-container {
+    width: 576px;
+    height: 1024px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #output {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  #output-text {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 30px;
+  }
+
+  label {
+    display: block;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+
+  select, input, button, textarea {
+    display: block;
+    margin-bottom: 10px;
+    width: 100%;
+  }
+
+  input[type="color"] {
+    height: 40px;
+  }
+
+  button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+  }
+
+  .rainbow-text {
+    background-image: linear-gradient(45deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #8b00ff);
+    background-size: 100% 100%;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+</style>
+</head>
+<body>
+  <div class="controls">
+    <label for="text-input">Enter your text:</label>
+    <textarea id="text-input" rows="5" placeholder="Enter your text here"></textarea>
+
+    <label for="text-style">Text Style:</label>
+    <select id="text-style">
+      <option value="normal">Normal</option>
+      <option value="gradient">Rainbow Gradient</option>
+    </select>
+
+    <label for="gradient-direction">Gradient Direction:</label>
+    <select id="gradient-direction">
+      <option value="to right">Left to Right</option>
+      <option value="to bottom">Top to Bottom</option>
+      <option value="to bottom right">Diagonal</option>
+    </select>
+
+    <label for="gradient-type">Gradient Type:</label>
+    <select id="gradient-type">
+      <option value="whole">Whole Text</option>
+      <option value="line">Per Line</option>
+    </select>
+
+    <label for="font-weight">Font Weight:</label>
+    <select id="font-weight">
+      <option value="normal">Normal</option>
+      <option value="bold">Bold</option>
+    </select>
+
+    <label for="font-style">Font Style:</label>
+    <select id="font-style">
+      <option value="normal">Normal</option>
+      <option value="italic">Italic</option>
+    </select>
+
+    <label for="text-align">Text Alignment:</label>
+    <select id="text-align">
+      <option value="left">Left</option>
+      <option value="center">Center</option>
+      <option value="right">Right</option>
+      <option value="justify">Justify</option>
+    </select>
+
+    <label for="text-color">Text Color:</label>
+    <input type="color" id="text-color" value="#ffffff">
+
+    <label for="background-color">Background Color:</label>
+    <input type="color" id="background-color" value="#000000">
+
+    <label>
+      <input type="checkbox" id="transparent-bg"> Transparent Background
+    </label>
+
+    <label for="font-size">Font Size:</label>
+    <input type="number" id="font-size" min="10" max="100" value="30">
+
+    <label for="line-spacing">Line Spacing:</label>
+    <input type="number" id="line-spacing" min="0.5" max="3" step="0.1" value="1.2">
+
+    <label for="letter-spacing">Letter Spacing:</label>
+    <input type="number" id="letter-spacing" min="-2" max="10" value="-2">
+
+    <label for="margin-top">Top Margin:</label>
+    <input type="number" id="margin-top" placeholder="Top Margin" value="0">
+
+    <label for="margin-bottom">Bottom Margin:</label>
+    <input type="number" id="margin-bottom" placeholder="Bottom Margin" value="0">
+
+    <label for="margin-left">Left Margin:</label>
+    <input type="number" id="margin-left" placeholder="Left Margin" value="-100">
+
+    <label for="margin-right">Right Margin:</label>
+    <input type="number" id="margin-right" placeholder="Right Margin" value="-100">
+
+    <button id="download-btn">Download</button>
+  </div>
+  <div class="canvas-container">
+    <div id="output-container">
+      <div id="output">
+        <div id="output-text"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <script>
+    const textInput = document.getElementById('text-input');
+    const textStyle = document.getElementById('text-style');
+    const gradientDirection = document.getElementById('gradient-direction');
+    const gradientType = document.getElementById('gradient-type');
+    const fontWeight = document.getElementById('font-weight');
+    const fontStyle = document.getElementById('font-style');
+    const textAlign = document.getElementById('text-align');
+    const textColor = document.getElementById('text-color');
+    const backgroundColor = document.getElementById('background-color');
+    const transparentBg = document.getElementById('transparent-bg');
+    const fontSize = document.getElementById('font-size');
+    const lineSpacing = document.getElementById('line-spacing');
+    const letterSpacing = document.getElementById('letter-spacing');
+    const marginTop = document.getElementById('margin-top');
+    const marginBottom = document.getElementById('margin-bottom');
+    const marginLeft = document.getElementById('margin-left');
+    const marginRight = document.getElementById('margin-right');
+    const downloadBtn = document.getElementById('download-btn');
+    const outputContainer = document.getElementById('output-container');
+    const output = document.getElementById('output');
+    const outputText = document.getElementById('output-text');
+
+    downloadBtn.addEventListener('click', downloadImage);
+    
+    [textInput, textStyle, gradientDirection, gradientType, fontWeight, fontStyle, textAlign, textColor, backgroundColor, transparentBg, fontSize, lineSpacing, letterSpacing, marginTop, marginBottom, marginLeft, marginRight].forEach(el => {
+      el.addEventListener('input', generateImage);
+    });
+
+    function generateImage() {
+      const text = textInput.value;
+      const style = textStyle.value;
+      const align = textAlign.value;
+      outputText.innerHTML = ''; // Clear previous content
+
+      if (style === 'normal') {
+        outputText.textContent = text;
+        outputText.style.color = textColor.value;
+        outputText.style.backgroundImage = 'none';
+        outputText.style.webkitBackgroundClip = 'initial';
+        outputText.style.backgroundClip = 'initial';
+      } else if (style === 'gradient') {
+        const direction = gradientDirection.value;
+        const type = gradientType.value;
+
+        if (type === 'whole') {
+          outputText.textContent = text;
+          applyGradient(outputText, direction);
+        } else if (type === 'line') {
+          const lines = text.split('\n');
+          lines.forEach(line => {
+            const span = document.createElement('span');
+            span.textContent = line;
+            applyGradient(span, direction);
+            outputText.appendChild(span);
+            outputText.appendChild(document.createElement('br'));
+          });
+        }
+      }
+
+      outputText.style.textAlign = align;
+      outputText.style.fontSize = `${fontSize.value}px`;
+      outputText.style.lineHeight = lineSpacing.value;
+      outputText.style.letterSpacing = `${letterSpacing.value}px`;
+      outputText.style.marginTop = `${marginTop.value}px`;
+      outputText.style.marginBottom = `${marginBottom.value}px`;
+      outputText.style.marginLeft = `${marginLeft.value}px`;
+      outputText.style.marginRight = `${marginRight.value}px`;
+      outputText.style.fontWeight = fontWeight.value;
+      outputText.style.fontStyle = fontStyle.value;
+
+      outputContainer.style.backgroundColor = transparentBg.checked ? 'transparent' : backgroundColor.value;
+    }
+
+    function applyGradient(element, direction) {
+      element.style.backgroundImage = `linear-gradient(${direction}, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #8b00ff)`;
+      element.style.webkitBackgroundClip = 'text';
+      element.style.backgroundClip = 'text';
+      element.style.color = 'transparent';
+      element.style.backgroundSize = '100% 100%';
+    }
+
+    function downloadImage() {
+      html2canvas(outputContainer, {
+        width: outputContainer.offsetWidth,
+        height: outputContainer.offsetHeight,
+        scale: 2,
+        backgroundColor: null
+      }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'tiktok-commercial.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    }
+
+    // Set default settings
+    textStyle.value = 'gradient';
+    transparentBg.checked = true;
+    marginLeft.value = -100;
+    marginRight.value = -100;
+    fontSize.value = 30;
+    letterSpacing.value = -2;
+    fontWeight.value = 'bold';
+    fontStyle.value = 'italic';
+    generateImage();
+  </script>
+</body>
+</html>
